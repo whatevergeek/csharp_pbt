@@ -6,6 +6,6 @@ namespace csharp_pbt
 {
     public static class Diamond
     {
-        public static string Make(char letter) => "Devil's Advocate.";
+        public static string Make(char letter) => "  A  ";
     }
 }
