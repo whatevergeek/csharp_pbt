@@ -2,6 +2,8 @@ using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace csharp_pbt
 {
@@ -76,6 +78,32 @@ namespace csharp_pbt
 
             var rows = Split(actual);
             return Array.TrueForAll<string>(rows, r => GetLeadingSpaces(r) == GetTrailingSpaces(r)); 
+        }
+
+        IEnumerable<char> GetAlphaList(char endChar)
+        {
+            foreach(var c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            {
+                yield return c;
+                if(c == endChar)
+                {
+                    break;
+                }
+            }
+        }
+
+        [DiamondProperty]
+        public bool TestProperty_FigureTopHasCorrectLettersAndOrder(char letter)
+        {
+            var actual = Diamond.Make(letter);
+            var expected = GetAlphaList(letter);
+
+            var rows = Split(actual);
+            var firstNonWhiteSpaceLetters = 
+                rows.Take(expected.Count())
+                .ToList<string>()
+                .Select(s => s.Trim()[0]);
+            return expected.SequenceEqual(firstNonWhiteSpaceLetters);
         }
     }
 }
