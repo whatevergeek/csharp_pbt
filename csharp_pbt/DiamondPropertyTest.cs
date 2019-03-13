@@ -105,5 +105,25 @@ namespace csharp_pbt
                 .Select(s => s.Trim()[0]);
             return expected.SequenceEqual(firstNonWhiteSpaceLetters);
         }
+
+        [DiamondProperty]
+        public bool TestProperty_FigureIsHorizontallySymmetric(char letter)
+        {
+            var actual = Diamond.Make(letter);
+
+            var rows = Split(actual);
+
+            var topRows = 
+                rows
+                .TakeWhile(r => !r.Contains(letter))
+                .ToList<string>();
+            var bottomRows =
+                rows
+                .SkipWhile(r => !r.Contains(letter))
+                .Skip(1)
+                .ToList().Reverse<string>();
+
+            return topRows.SequenceEqual(bottomRows);
+        }
     }
 }

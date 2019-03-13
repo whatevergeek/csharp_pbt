@@ -19,10 +19,13 @@ namespace csharp_pbt
             }
         }
 
-        public static string Make(char letter) =>
-            GetAlphaList(letter)
-            .Select(s => s.ToString())
-            .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
- 
+        public static string Make(char letter)
+        {
+            var letters = GetAlphaList(letter);
+            
+            return letters.Concat(letters.Reverse().Skip(1))
+                .Select(s => s.ToString())
+                .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
+        }
     }
 }
