@@ -20,7 +20,7 @@ namespace csharp_pbt
 
         public class DiamondProperty : PropertyAttribute
         {
-            public DiamondProperty(): base()
+            public DiamondProperty() : base()
             {
                 Arbitrary = new Type[] { typeof(Letters) };
             }
@@ -77,15 +77,15 @@ namespace csharp_pbt
             }
 
             var rows = Split(actual);
-            return Array.TrueForAll<string>(rows, r => GetLeadingSpaces(r) == GetTrailingSpaces(r)); 
+            return Array.TrueForAll<string>(rows, r => GetLeadingSpaces(r) == GetTrailingSpaces(r));
         }
 
         IEnumerable<char> GetAlphaList(char endChar)
         {
-            foreach(var c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            foreach (var c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
             {
                 yield return c;
-                if(c == endChar)
+                if (c == endChar)
                 {
                     break;
                 }
@@ -99,7 +99,7 @@ namespace csharp_pbt
             var expected = GetAlphaList(letter);
 
             var rows = Split(actual);
-            var firstNonWhiteSpaceLetters = 
+            var firstNonWhiteSpaceLetters =
                 rows.Take(expected.Count())
                 .ToList<string>()
                 .Select(s => s.Trim()[0]);
@@ -113,7 +113,7 @@ namespace csharp_pbt
 
             var rows = Split(actual);
 
-            var topRows = 
+            var topRows =
                 rows
                 .TakeWhile(r => !r.Contains(letter))
                 .ToList<string>();
@@ -124,6 +124,17 @@ namespace csharp_pbt
                 .ToList().Reverse<string>();
 
             return topRows.SequenceEqual(bottomRows);
+        }
+
+        [DiamondProperty]
+        public bool TestProperty_DiamondIsAsWideAsItsHeight(char letter)
+        {
+            var actual = Diamond.Make(letter);
+
+            var rows = Split(actual);
+            var expectedRowLength = rows.Length;
+
+            return Array.TrueForAll<string>(rows, row => row.Length == expectedRowLength);
         }
     }
 }

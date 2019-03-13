@@ -19,12 +19,18 @@ namespace csharp_pbt
             }
         }
 
+        static string MakeLine(int letterCount, char letter)
+        {
+            var padding = new String(' ', letterCount - 1);
+            return $"{padding ?? string.Empty}{letter}{padding ?? string.Empty}";
+        }
+
         public static string Make(char letter)
         {
             var letters = GetAlphaList(letter);
             
             return letters.Concat(letters.Reverse().Skip(1))
-                .Select(s => s.ToString())
+                .Select(s => MakeLine(letters.Count(), s))
                 .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
         }
     }
