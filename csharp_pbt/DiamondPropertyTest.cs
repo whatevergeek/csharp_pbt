@@ -26,14 +26,6 @@ namespace csharp_pbt
             }
         }
 
-
-        [Property]
-        public bool TestProperty_DiamondIsNonEmpty(char letter)
-        {
-            var actual = Diamond.Make(letter);
-            return !string.IsNullOrWhiteSpace(actual);
-        }
-
         [Property(Arbitrary = new Type[] { typeof(Letters) })]
         public bool TestProperty_DiamondIsNonEmptyV2(char letter)
         {
@@ -80,23 +72,11 @@ namespace csharp_pbt
             return Array.TrueForAll<string>(rows, r => GetLeadingSpaces(r) == GetTrailingSpaces(r));
         }
 
-        IEnumerable<char> GetAlphaList(char endChar)
-        {
-            foreach (var c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-            {
-                yield return c;
-                if (c == endChar)
-                {
-                    break;
-                }
-            }
-        }
-
         [DiamondProperty]
         public bool TestProperty_FigureTopHasCorrectLettersAndOrder(char letter)
         {
             var actual = Diamond.Make(letter);
-            var expected = GetAlphaList(letter);
+            var expected = Enumerable.Range('A', letter - 'A' + 1).Select(i => (Char)i).ToArray();
 
             var rows = Split(actual);
             var firstNonWhiteSpaceLetters =
@@ -135,6 +115,23 @@ namespace csharp_pbt
             var expectedRowLength = rows.Length;
 
             return Array.TrueForAll<string>(rows, row => row.Length == expectedRowLength);
+        }
+
+        [DiamondProperty]
+        public bool TestProperty_AllRowsExceptTopAndBottomHaveTwoIdenticalLetters(char letter)
+        {
+            var actual = Diamond.Make(letter);
+
+            bool hasIdenticalLetters(string x) => x.Distinct().Count() == 1;
+            bool hasTwoLetters(string x) => x.Length == 2;
+            bool hasTwoIdenticalLetters(string x) => hasIdenticalLetters(x) && hasTwoLetters(x);
+
+            var rows = Split(actual)
+                .Where(x => !x.Contains("A"))
+                .Select(x => x.Replace(" ", string.Empty))
+                .ToArray();
+
+            return Array.TrueForAll<string>(rows, row => hasTwoIdenticalLetters(row));
         }
     }
 }

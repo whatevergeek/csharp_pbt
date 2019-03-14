@@ -7,31 +7,30 @@ namespace csharp_pbt
 {
     public static class Diamond
     {
-        static IEnumerable<char> GetAlphaList(char endChar)
-        {
-            foreach (var c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-            {
-                yield return c;
-                if (c == endChar)
-                {
-                    break;
-                }
-            }
-        }
-
         static string MakeLine(int letterCount, char letter)
         {
             var padding = new String(' ', letterCount - 1);
-            return $"{padding ?? string.Empty}{letter}{padding ?? string.Empty}";
+            switch(letter)
+            {
+                case 'A':
+                    return $"{padding ?? string.Empty}{letter}{padding ?? string.Empty}";
+                default:
+                    var left = 
+                        $"{letter}{padding ?? string.Empty}"
+                        .ToList();
+                    return left.Concat(left.Reverse<char>().Skip(1))
+                        .Select(x => x.ToString())
+                        .Aggregate((x, y) => $"{x}{y}");
+            }
         }
 
         public static string Make(char letter)
         {
-            var letters = GetAlphaList(letter);
-            
+            var letters = Enumerable.Range('A', letter - 'A' + 1).Select(i => (Char)i).ToArray();
+
             return letters.Concat(letters.Reverse().Skip(1))
-                .Select(s => MakeLine(letters.Count(), s))
-                .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
+                    .Select(s => MakeLine(letters.Count(), s))
+                    .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
         }
     }
 }
