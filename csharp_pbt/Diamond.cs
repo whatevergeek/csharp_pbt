@@ -7,16 +7,17 @@ namespace csharp_pbt
 {
     public static class Diamond
     {
-        static string MakeLine(int letterCount, char letter)
+        static string MakeLine(int letterCount, char letter, int letterIndex)
         {
-            var padding = new String(' ', letterCount - 1);
-            switch(letter)
+            var leadingSpace = new String(' ', letterCount - 1 - letterIndex);
+            var innerSpace = new String(' ', letterCount - 1 - leadingSpace.Length);
+            switch (letter)
             {
                 case 'A':
-                    return $"{padding ?? string.Empty}{letter}{padding ?? string.Empty}";
+                    return $"{leadingSpace ?? string.Empty}{letter}{leadingSpace ?? string.Empty}";
                 default:
                     var left = 
-                        $"{letter}{padding ?? string.Empty}"
+                        $"{leadingSpace ?? string.Empty}{letter}{innerSpace ?? string.Empty}"
                         .ToList();
                     return left.Concat(left.Reverse<char>().Skip(1))
                         .Select(x => x.ToString())
@@ -26,10 +27,11 @@ namespace csharp_pbt
 
         public static string Make(char letter)
         {
-            var letters = Enumerable.Range('A', letter - 'A' + 1).Select(i => (Char)i).ToArray();
+            var letters = Enumerable.Range('A', letter - 'A' + 1).Select(i => (Char)i).ToArray()
+                .Select((val, index) => (value: val, index: index));
 
             return letters.Concat(letters.Reverse().Skip(1))
-                    .Select(s => MakeLine(letters.Count(), s))
+                    .Select(s => MakeLine(letters.Count(), s.value, s.index))
                     .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
         }
     }

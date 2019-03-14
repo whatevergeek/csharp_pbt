@@ -50,24 +50,23 @@ namespace csharp_pbt
             return Split(actual)?[0]?.Contains("A") ?? false;
         }
 
+        char[] alpha = Enumerable.Range('A', 'Z' - 'A' + 1).Select(i => (Char) i).ToArray();
+        string GetLeadingSpaces(string x)
+        {
+            var indexOfNonSpace = x.IndexOfAny(alpha);
+            return x.Substring(0, indexOfNonSpace);
+        }
+
+        string GetTrailingSpaces(string x)
+        {
+            var trailingIndexOfNonSpace = x.LastIndexOfAny(alpha);
+            return x.Substring(trailingIndexOfNonSpace + 1);
+        }
+
         [DiamondProperty]
         public bool TestProperty_AllRowsMustHaveSymmetricContour(char letter)
         {
             var actual = Diamond.Make(letter);
-            var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-
-            string GetLeadingSpaces(string x)
-            {
-                var indexOfNonSpace = x.IndexOfAny(alpha);
-                return x.Substring(0, indexOfNonSpace);
-            }
-
-            string GetTrailingSpaces(string x)
-            {
-                var trailingIndexOfNonSpace = x.LastIndexOfAny(alpha);
-                return x.Substring(trailingIndexOfNonSpace + 1);
-            }
-
             var rows = Split(actual);
             return Array.TrueForAll<string>(rows, r => GetLeadingSpaces(r) == GetTrailingSpaces(r));
         }
@@ -132,6 +131,21 @@ namespace csharp_pbt
                 .ToArray();
 
             return Array.TrueForAll<string>(rows, row => hasTwoIdenticalLetters(row));
+        }
+
+        [DiamondProperty]
+        public bool TestProperty_LowerLeftSpaceIsAnIsoscelesRightTriangle(char letter)
+        {
+            var actual = Diamond.Make(letter);
+            var rows = Split(actual);
+            var lowerLeftSpace =
+                rows.SkipWhile(x => !(x.Contains(letter.ToString())))
+                .Select(x => GetLeadingSpaces(x))
+                .ToList();
+            var spaceCounts = lowerLeftSpace.Select(x => x.Length);
+            var expected = Enumerable.Range(0, spaceCounts.Count());
+
+            return expected.SequenceEqual(spaceCounts);
         }
     }
 }
